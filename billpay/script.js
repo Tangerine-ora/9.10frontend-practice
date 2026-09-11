@@ -60,3 +60,29 @@ const formatReport = (list) => {
 console.log('分类统计: ', groupByCategory(cleanRecords(records)));
 console.log('大额消费: ', filterBigSpend(cleanRecords(records)));
 console.log('报告预览: ', formatReport(records));
+
+const addRecord = () => {
+    const category = prompt('请输入消费类别（如：餐饮/交通/购物）：');
+    if (!category) return null;
+
+    const amountStr = prompt('请输入消费金额（正数）：');
+    const amount = Number(amountStr);
+    if (Number.isNaN(amount) || amount <= 0) {
+        console.warn('金额非法，已忽略该记录');
+        return null;
+    }
+
+    const note = prompt('请输入备注（可留空）：') || '无';
+    return { category, amount, note };
+};
+
+try {
+    const newRecord = addRecord();
+    const allRecords = newRecord ? [...records, newRecord] : records;
+    console.log('===== 消费记账报告 =====');
+    console.log(formatReport(allRecords));
+} catch (err) {
+    console.error('报告生成失败：', err.message);
+}
+
+console.log('空数据测试：', formatReport([]));
