@@ -25,3 +25,38 @@ const averageSpent = (list) => {
 console.log('清洗后记录数: ', cleanRecords(records).length);
 console.log('总支出: ', totalSpent(cleanRecords(records)));
 console.log('平均消费: ', averageSpent(cleanRecords(records)));
+
+const groupByCategory = (list) => {
+    const result = {};
+    list.forEach(r => {
+        if (!result[r.category]) {
+            result[r.category] = 0;
+        }
+        result[r.category] += r.amount;
+    });
+    return result;
+};
+
+const filterBigSpend = (list, threshold = 100) =>
+    list
+        .filter(r => r.amount >= threshold)
+        .map(r => `${r.category}：${r.amount}元（${r.note}）`);
+
+const formatReport = (list) => {
+    const valid = cleanRecords(list);
+    if (valid.length === 0) {
+        return '没有有效消费记录';
+    }
+    const dist = groupByCategory(valid);
+    const distText = Object.entries(dist)
+        .map(([category, amount]) => `${category} ${amount.toFixed(2)}元`)
+        .join('、');
+    return `有效记录${valid.length}笔，总支出${totalSpent(valid).toFixed(2)}元，` +
+        `平均每笔${averageSpent(valid)}元；` +
+        `分类统计：${distText}；` +
+        `大额消费（≥100元）：${filterBigSpend(valid).join('、') || '无'}`;
+};
+
+console.log('分类统计: ', groupByCategory(cleanRecords(records)));
+console.log('大额消费: ', filterBigSpend(cleanRecords(records)));
+console.log('报告预览: ', formatReport(records));
